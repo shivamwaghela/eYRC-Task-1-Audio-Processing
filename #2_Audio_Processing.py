@@ -32,9 +32,10 @@ def play(sound_file):
     sound = np.zeros(file_length)  # Return a new array of given shape and type, filled with zeros
     for i in range(file_length):
         data = sound_file.readframes(1)  # Reads and returns at most n frames of audio, as a bytes object
-        data = struct.unpack("<h", data)
+        data = struct.unpack("<h", data) # decoding: byte string is mapped to an integer
         sound[i] = int(data[0])
-    sound = np.divide(sound, float(2 ** 15))  # Normalize data in range -1 to 1
+    sound = np.divide(sound, float(2 ** 15))  # Normalize data in range -1 to 1 as the data is 2 bytes long
+    #does sound now contains the audio amplitude?
 
     # squaring(window_size) -> mean
     mean_squared_list = []
@@ -52,8 +53,8 @@ def play(sound_file):
     temp = mean_squared_list[0]
     times = 0
     silence = []
-    for i in range(1, len(mean_squared_list)):
-        if mean_squared_list[i] < 0.1:  # detect silence
+    for i in range(len(mean_squared_list)):
+        if mean_squared_list[i] < 0.1:  # If amplitude mean-square value < threshold then silence
             silence.append(i)  # store the index of window of silence
 
     start = 0
@@ -112,9 +113,9 @@ def play(sound_file):
 ############################## Testing Audio File #############################
 if __name__ == "__main__":
     #code for checking output for all audio
-    for file_number in range(1,6):
+    for file_number in range(1,2):
         Identified_Notes = []
-        file_name = "Test_Audio_files/New_Audio_files/Audio_"+str(file_number)+".wav"
+        file_name = "/media/shivam/644C84384C840750/Users/Swaminarayan/Documents/eYantra 2016/Task 1/Audio_Processing/Test_Audio_files/Audio_"+str(file_number)+".wav"
         sound_file = wave.open(file_name)
         Identified_Notes = play(sound_file)
         #Identified_Notes_list.append(Identified_Notes)
