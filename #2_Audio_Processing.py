@@ -58,12 +58,12 @@ def play(sound_file):
             silence.append(i)  # store the index of window of silence
 
     start = 0
+    end = silence[0] * window_size
     i = 0
     notes_freq = []
     exi = 0
     # loop
-    for iterator in range(len(silence)):
-        end = silence[i] * window_size
+    for iterator in range(1, len(silence)):
         fourier = np.fft.fft(sound[start:end])
         freqs = np.fft.fftfreq(len(fourier))
         idx = np.argmax(np.abs(fourier))
@@ -74,18 +74,18 @@ def play(sound_file):
         notes_freq.append(freq_in_hertz)
 
         while True:
-            if (len(silence) - 1 != i and i < len(silence)):
-                if silence[i + 1] != silence[i] + 1:  # adjacent window not silent
+            if i < len(silence) - 1:  # to prevent index out of bound error
+                if silence[i + 1] != silence[i] + 1:  # if adjacent blocks are not silent
                     start = (silence[i] + 1) * window_size
                     i += 1
+                    end = silence[i] * window_size
                     break
-                else:  # if adjacent is also silence
+                else:
                     i += 1
-            else:
-                exi = 1
+            else:  # last note
+                start = (silence[i] + 1) * window_size
+                end = file_length - 1
                 break
-        if (exi == 1):
-            break
 
     # Identify notes from frequency
     L = [("A0", 27.50), ("A1", 55.00), ("A2", 110.00), ("A3", 220.00), ("A4", 440.00), ("A5", 880.00), ("A6", 1760.00),
@@ -115,7 +115,8 @@ if __name__ == "__main__":
     #code for checking output for all audio
     for file_number in range(1,2):
         Identified_Notes = []
-        file_name = "/media/shivam/644C84384C840750/Users/Swaminarayan/Documents/eYantra 2016/Task 1/Audio_Processing/Test_Audio_files/Audio_"+str(file_number)+".wav"
+        file_name = "/media/shivam/644C84384C840750/Users/Swaminarayan/Documents/eYantra 2016/Task 1/Audio_Processing/Audacity/Audio_" + str(
+            file_number) + ".wav"
         sound_file = wave.open(file_name)
         Identified_Notes = play(sound_file)
         #Identified_Notes_list.append(Identified_Notes)
