@@ -50,8 +50,6 @@ def play(sound_file):
             counter = 0
             result = 0
 
-    temp = mean_squared_list[0]
-    times = 0
     silence = []
     for i in range(len(mean_squared_list)):
         if mean_squared_list[i] < 0.1:  # If amplitude mean-square value < threshold then silence
@@ -61,8 +59,7 @@ def play(sound_file):
     end = silence[0] * window_size
     i = 0
     notes_freq = []
-    exi = 0
-    # loop
+
     for iterator in range(1, len(silence)):
         fourier = np.fft.fft(sound[start:end])
         freqs = np.fft.fftfreq(len(fourier))
